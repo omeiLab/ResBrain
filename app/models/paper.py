@@ -1,11 +1,12 @@
 from datetime import datetime
 from typing import List, Optional, TYPE_CHECKING
 from sqlmodel import SQLModel, Field, Relationship
+from app.models.link_tables import PaperTag
+from app.models.tag import TagRead
 
 if TYPE_CHECKING:
     from app.models.note import Note
     from app.models.tag import Tag
-    from app.models.link_tables import PaperTag
 
 class PaperBase(SQLModel):
     title: str
@@ -23,7 +24,9 @@ class Paper(PaperBase, table=True):
     tags: List["Tag"] = Relationship(back_populates="papers", link_model=PaperTag)
     
 class PaperCreate(PaperBase):
-    pass
+    tags: List[str] = []
 
 class PaperRead(PaperBase):
-    pass
+    tags: List["TagRead"] = []
+    
+PaperRead.model_rebuild()

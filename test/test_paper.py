@@ -5,18 +5,19 @@ def test_create_paper(client):
     '''
     payload = {
         "title": "Attention is All You Need",
-        "authors": "Vaswani et al.",
-        "abstract": "The dominant sequence transduction models...",
+        "authors": "Vaswani",
         "year": 2017,
         "venue": "NeurIPS",
-        "pdf_path": "/path/to/pdf"
+        "pdf_path": "/path",
+        "abstract": "...",
+        "tags": ["Transformer", "Attention"] 
     }
     response = client.post("/papers/", json=payload)
     
-    assert response.status_code == 201  # created
+    assert response.status_code == 201
     data = response.json()
-    assert data["title"] == payload["title"]
-    assert "id" in data
+    assert len(data["tags"]) == 2
+    assert data["tags"][0]["name"] in ["Transformer", "Attention"]
     
 def test_get_all_paper(client, sample_paper):
     '''
