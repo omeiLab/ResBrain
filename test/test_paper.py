@@ -19,7 +19,7 @@ def test_create_paper(client):
     assert len(data["tags"]) == 2
     assert data["tags"][0]["name"] in ["Transformer", "Attention"]
     
-def test_get_all_paper(client, sample_paper):
+def test_get_all_papers(client, sample_paper):
     '''
     Test retrieving all papers
     API: GET /papers/
@@ -109,7 +109,7 @@ def test_delete_paper(client, sample_paper):
     assert response.status_code == 204  # no content
     
     # test if the paper is deleted
-    response = client.get(f"/papers/{sample_paper.id}")
+    response = client.get(f"/papers/1")
     
     assert response.status_code == 404  # not found
     assert response.json() == {"detail": "Paper not found"}

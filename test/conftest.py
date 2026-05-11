@@ -5,6 +5,7 @@ from fastapi.testclient import TestClient
 from app.main import app
 from app.database.db import get_session
 from app.models.paper import Paper
+from app.models.tag import Tag
 
 sqlite_url = "sqlite:///:memory:"
 engine = create_engine(sqlite_url, connect_args={"check_same_thread": False}, poolclass=StaticPool)
@@ -30,8 +31,16 @@ def client_fixture(session: Session):
     
 @pytest.fixture
 def sample_paper(session):
-    paper = Paper(title="Initial Paper", authors="Author", year=2023, venue="Conf", abstract="...", pdf_path="...")
+    paper = Paper(title="ReAct", authors="Yao", year=2023, venue="ICLR", abstract="...", pdf_path="...")
     session.add(paper)
     session.commit()
     session.refresh(paper)
     return paper
+
+@pytest.fixture
+def sample_tag(session):
+    tag = Tag(name="Attention")
+    session.add(tag)
+    session.commit()
+    session.refresh(tag)
+    return tag

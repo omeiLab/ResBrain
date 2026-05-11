@@ -29,5 +29,3 @@ class PaperCreate(PaperBase):
 class PaperRead(PaperBase):
     id: int
     tags: List["TagRead"] = []
-    
-PaperRead.model_rebuild()
