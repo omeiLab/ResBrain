@@ -10,7 +10,7 @@ def get_or_create_tags(session: Session, tag_names: List[str]) -> List[Tag]:
     if not tag_names:
         return []
 
-    # fetch all the names of existed tags
+    # fetch all the names of specified tags
     unique_names = list(set(name.strip() for name in tag_names if name.strip()))
 
     # get the rows where Tag.name exists

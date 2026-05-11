@@ -36,11 +36,11 @@ def test_get_paper_by_id(client, sample_paper):
     Test retrieving a paper by id
     API: GET /papers/{id}
     '''
-    response = client.get(f"/papers/{sample_paper.id}")
+    response = client.get(f"/papers/1")
     
     assert response.status_code == 200  # ok
     data = response.json()
-    assert data["title"] == sample_paper.title 
+    assert data["title"] == sample_paper.title
     assert data["id"] == sample_paper.id 
     
 def test_get_paper_by_invalid_id(client, sample_paper):
@@ -64,20 +64,21 @@ def test_update_paper(client, sample_paper):
         "abstract": "Updated abstract",
         "year": 2024,
         "venue": "Updated Venue",
-        "pdf_path": "/updated/path/to/pdf"
+        "pdf_path": "/updated/path/to/pdf",
+        "tags": ["test", "dummy"]
     }
-    response = client.put(f"/papers/{sample_paper.id}", json=payload)
+    response = client.put(f"/papers/1", json=payload)
     
     assert response.status_code == 204  # no content
     
     # Verify the update
-    response = client.get(f"/papers/{sample_paper.id}")
+    response = client.get(f"/papers/1")
     
     assert response.status_code == 200  # ok
     data = response.json()
     assert data["id"] == sample_paper.id 
-    assert data[0]["title"] == payload["title"]
-    assert data[0]["year"] == payload["year"]
+    assert data["title"] == payload["title"]
+    assert data["year"] == payload["year"]
     
 def test_update_paper_by_invalid_id(client, sample_paper):
     '''
@@ -90,7 +91,8 @@ def test_update_paper_by_invalid_id(client, sample_paper):
         "abstract": "Updated abstract",
         "year": 2024,
         "venue": "Updated Venue",
-        "pdf_path": "/updated/path/to/pdf"
+        "pdf_path": "/updated/path/to/pdf",
+        "tags": ["test", "dummy"]
     }
     response = client.put(f"/papers/0", json=payload)
     
@@ -102,7 +104,7 @@ def test_delete_paper(client, sample_paper):
     Test deleting a paper by id
     API: DELETE /papers/{id}
     '''
-    response = client.delete(f"/papers/{sample_paper.id}")
+    response = client.delete(f"/papers/1")
     
     assert response.status_code == 204  # no content
     

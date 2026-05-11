@@ -14,6 +14,7 @@ def session_fixture():
     SQLModel.metadata.create_all(engine)
     with Session(engine) as session:
         yield session
+    SQLModel.metadata.drop_all(engine)
 
 @pytest.fixture(name="client")
 def client_fixture(session: Session):
