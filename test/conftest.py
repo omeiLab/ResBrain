@@ -3,6 +3,7 @@ from sqlmodel import SQLModel, create_engine, Session
 from fastapi.testclient import TestClient
 from app.main import app
 from app.database.db import get_session
+from app.models.paper import Paper
 
 sqlite_url = "sqlite:///:memory:"
 engine = create_engine(sqlite_url, connect_args={"check_same_thread": False})

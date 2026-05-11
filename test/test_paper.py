@@ -1,6 +1,3 @@
-from fastapi.testclient import TestClient
-from app.main import app
-
 def test_create_paper(client):
     ''' 
     Test the creation of a new paper 
