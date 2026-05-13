@@ -4,7 +4,7 @@ from app.database.db import create_db_and_tables
 from app.models.note import Note
 from app.models.paper import Paper
 from app.models.tag import Tag
-from app.routers import paper
+from app.routers import paper, tag
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -13,3 +13,4 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 app.include_router(paper.router)
+app.include_router(tag.router)

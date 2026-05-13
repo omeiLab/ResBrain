@@ -22,15 +22,24 @@ def test_get_tags_after_creating_paper(client, sample_tag):
         "venue": "NeurIPS",
         "pdf_path": "/path",
         "abstract": "...",
-        "tags": ["Transformer", "Attention"] 
+        "tags": ["Transformer", "Attention"]
     }
-    _ = client.post("/papers/", json=payload)
+
+    client.post("/papers/", json=payload)
     response = client.get("/tags/")
 
-    assert response.status_code == 200  # ok
+    assert response.status_code == 200
     data = response.json()
-    tag_set = set(sample_tag)
-    assert data == list(tag_set.union(data))
+    returned_tag_names = {tag["name"] for tag in data}
+    expected_tag_names = {"Transformer", "Attention"}
+
+    # if sample_tag fixture already creates tags:
+    if isinstance(sample_tag, list):
+        expected_tag_names.update(tag.name for tag in sample_tag)
+    else:
+        expected_tag_names.add(sample_tag.name)
+
+    assert expected_tag_names.issubset(returned_tag_names)
 
 def test_delete_tag(client, sample_tag):
     '''
@@ -82,6 +91,8 @@ def test_delete_tag_removes_link_but_not_paper(client, sample_tag):
     response = client.get("/papers/1")
     assert response.status_code == 200  # ok
     data = response.json()
-    assert "Transformer" in data["tags"]
-    assert "Attention" not in data["tags"]
+    tags = data['tags']
+    assert data['title'] == payload["title"]
+    assert any(t["name"] == "Transformer" for t in tags)
+    assert not any(t["name"] == "Attention" for t in tags)
 
