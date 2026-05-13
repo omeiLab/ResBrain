@@ -39,8 +39,10 @@ def sample_paper(session):
 
 @pytest.fixture
 def sample_tag(session):
-    tag = Tag(name="Attention")
-    session.add(tag)
+    tag1 = Tag(name="Attention")
+    tag2 = Tag(name="DL")
+    tag = [tag1, tag2]
+    session.add_all(tag)
     session.commit()
-    session.refresh(tag)
+    # session.refresh(tag)
     return tag

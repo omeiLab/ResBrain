@@ -7,7 +7,8 @@ def test_get_tags(client, sample_tag):
     
     assert response.status_code == 200  # ok
     data = response.json()
-    assert any(t["name"] == sample_tag.name for t in data)
+    assert any(t["name"] == sample_tag[0].name for t in data)
+    assert any(t["name"] == sample_tag[1].name for t in data)
 
 def test_get_tags_after_creating_paper(client, sample_tag):
     '''
@@ -41,6 +42,62 @@ def test_get_tags_after_creating_paper(client, sample_tag):
 
     assert expected_tag_names.issubset(returned_tag_names)
 
+def test_get_tag_by_id(client, sample_tag):
+    '''
+    Test retrieving a tag by id
+    API: GET /tags/{id}
+    '''
+    response = client.get(f"/tags/1")
+    
+    assert response.status_code == 200  # ok
+    data = response.json()
+    assert data["name"] == sample_tag[0].name
+    assert data["id"] == sample_tag[0].id 
+    
+def test_get_tag_by_invalid_id(client, sample_tag):
+    '''
+    Test retrieving a tag by invalid id
+    API: GET /tags/{id}
+    '''
+    response = client.get("/tags/0")  
+    
+    assert response.status_code == 404  # not found
+    assert response.json() == {"detail": "Tag not found"}
+
+def test_update_tag(client, sample_tag):
+    '''
+    Test updating an existed tag
+    API: PUT /tags/{id}/
+    '''
+    payload = {"name": "Self-attention"}
+    response = client.put(f"/tags/1/", json=payload)
+    
+    assert response.status_code == 204 
+    
+    response = client.get(f"/tags/1/")
+    assert response.json()["name"] == "Self-attention"
+
+def test_update_tag_by_invalid_id(client, sample_tag):
+    '''
+    Test updating an existed tag with invalid id
+    API: PUT /tags/{id}/
+    '''
+    payload = {"name": "Self-attention"}
+    response = client.put(f"/tags/0/", json=payload)
+    
+    assert response.status_code == 404  # not found
+    assert response.json() == {"detail": "Tag not found"}
+
+def test_update_tag_conflict(client, sample_tag):
+    '''
+    Test the uniqueness of tag's name
+    API: PUT /tags/{id}/
+    '''
+    response = client.put(f"/tags/1/", json={"name": "DL"})
+
+    assert response.status_code == 400  # bad request
+    assert response.json() == {"detail": "Tag name exists"}
+
 def test_delete_tag(client, sample_tag):
     '''
     Test deleting the tag by a valid id
@@ -54,7 +111,7 @@ def test_delete_tag(client, sample_tag):
     response = client.get(f"/tags/")
     data = response.json()
     
-    assert sample_tag not in data
+    assert not any(t["id"] == sample_tag[0].id for t in data)
 
 def test_delete_tag_by_invalid_id(client):
     '''

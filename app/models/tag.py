@@ -11,9 +11,12 @@ class TagBase(SQLModel):
 class Tag(TagBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     papers: List["Paper"] = Relationship(back_populates="tags", link_model=PaperTag)
+
+class TagCreate(TagBase):
+    pass
     
 class TagRead(TagBase):
     id: int
 
-class TagReadWithPapers(TagBase):
+class TagReadWithPapers(TagRead):
     papers: list["PaperRead"] = []
