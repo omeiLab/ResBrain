@@ -14,7 +14,7 @@ def test_create_paper(client):
     }
     response = client.post("/papers/", json=payload)
     
-    assert response.status_code == 201
+    assert response.status_code == 201  # created
     data = response.json()
     assert len(data["tags"]) == 2
     assert data["tags"][0]["name"] in ["Transformer", "Attention"]

@@ -6,6 +6,7 @@ from app.main import app
 from app.database.db import get_session
 from app.models.paper import Paper
 from app.models.tag import Tag
+from app.models.note import Note
 
 sqlite_url = "sqlite:///:memory:"
 engine = create_engine(sqlite_url, connect_args={"check_same_thread": False}, poolclass=StaticPool)
@@ -46,3 +47,14 @@ def sample_tag(session):
     session.commit()
     # session.refresh(tag)
     return tag
+
+@pytest.fixture
+def sample_note(session, sample_paper):
+    note = Note(
+        content="ReAct = Reasoning + Acting",
+        paper_id=sample_paper.id
+    )
+    session.add(note)
+    session.commit()
+    session.refresh(note)
+    return note

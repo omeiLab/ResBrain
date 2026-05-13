@@ -20,7 +20,10 @@ class PaperBase(SQLModel):
 class Paper(PaperBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     
-    notes: List["Note"] = Relationship(back_populates="paper")
+    notes: list["Note"] = Relationship(
+        back_populates="paper",
+        sa_relationship_kwargs={"cascade": "all, delete-orphan"}
+    )
     tags: List["Tag"] = Relationship(back_populates="papers", link_model=PaperTag)
     
 class PaperCreate(PaperBase):
