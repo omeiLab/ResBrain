@@ -3,6 +3,7 @@ from sqlmodel import Session, select
 from typing import List
 from app.database.db import get_session
 from app.models.paper import Paper, PaperCreate, PaperRead
+from app.models.note import Note, NoteCreate, NoteRead
 from app.services.tag_service import get_or_create_tags
 
 router = APIRouter(prefix="/papers", tags=["papers"])
@@ -10,7 +11,7 @@ router = APIRouter(prefix="/papers", tags=["papers"])
 @router.post("/", response_model=PaperRead, status_code=201)
 def create_paper(paper_in: PaperCreate, session: Session = Depends(get_session)):
     '''
-    Create a new paper.
+    Create a new paper
     API: POST /papers/
     '''
     # receive a list of tags' names, return the list of Tag objects
@@ -25,6 +26,29 @@ def create_paper(paper_in: PaperCreate, session: Session = Depends(get_session))
     session.refresh(db_paper)
     
     return db_paper
+
+@router.post("/{id}/notes/", response_model=NoteRead, status_code=201)
+def create_note(note_in: NoteCreate, id: int, session: Session = Depends(get_session)):
+    '''
+    Create a new note
+    API: POST /papers/{id}/notes/
+    '''
+    db_paper = session.get(Paper, id)
+
+    # invalid id : no paper found
+    if not db_paper:
+        raise HTTPException(status_code=404, detail="Paper not found")
+    
+    note_data = note_in.model_dump()
+    db_note = Note(**note_data)
+    db_note.paper_id = id
+
+    # save to db
+    session.add(db_note)
+    session.commit()
+    session.refresh(db_note)
+    
+    return db_note
 
 @router.get("/", response_model=List[PaperRead], status_code=200)
 def get_paper(session: Session = Depends(get_session)):
@@ -48,6 +72,20 @@ def get_paper_by_id(id: int, session: Session = Depends(get_session)):
         raise HTTPException(status_code=404, detail="Paper not found")
     
     return db_paper
+
+@router.get("/{id}/notes/", response_model=List[NoteRead], status_code=200)
+def get_note(id: int, session: Session = Depends(get_session)):
+    '''
+    Get all notes
+    API: GET /papers/{id}/notes/
+    '''
+    db_paper = session.get(Paper, id)
+
+    # invalid id : no paper found
+    if not db_paper:
+        raise HTTPException(status_code=404, detail="Paper not found")
+    
+    return db_paper.notes
 
 @router.put("/{id}/", response_model=None, status_code=204)
 def update_paper(id: int, paper_in: PaperCreate, session: Session = Depends(get_session)):

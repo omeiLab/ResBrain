@@ -48,7 +48,7 @@ def test_get_note_by_invalid_paper_id(client, sample_paper, sample_note):
 def test_get_note_by_id(client, sample_paper, sample_note):
     '''
     Test retrieving all notes from a paper
-    API: GET /notes/{note_id}
+    API: GET /notes/{note_id}/
     '''
     response = client.get("/notes/1/")
     

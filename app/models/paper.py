@@ -3,6 +3,7 @@ from typing import List, Optional, TYPE_CHECKING
 from sqlmodel import SQLModel, Field, Relationship
 from app.models.link_tables import PaperTag
 from app.models.tag import TagRead
+from app.models.note import NoteRead
 
 if TYPE_CHECKING:
     from app.models.note import Note
@@ -32,3 +33,4 @@ class PaperCreate(PaperBase):
 class PaperRead(PaperBase):
     id: int
     tags: List["TagRead"] = []
+    notes: List["NoteRead"] = []
