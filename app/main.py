@@ -1,5 +1,6 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from app.database.db import create_db_and_tables
 from app.models.note import Note
 from app.models.paper import Paper
@@ -12,6 +13,11 @@ async def lifespan(app: FastAPI):
     yield
 
 app = FastAPI(lifespan=lifespan)
+
+# routers
 app.include_router(paper.router)
 app.include_router(tag.router)
 app.include_router(note.router)
+
+# pdf loader
+app.mount("/storage", StaticFiles(directory="storage"), name="storage")
