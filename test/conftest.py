@@ -58,3 +58,52 @@ def sample_note(session, sample_paper):
     session.commit()
     session.refresh(note)
     return note
+
+@pytest.fixture
+def sample_multiple_papers(session):
+    """
+    Assign multiple papers to test the filter
+    1. Attention (2017) - Tags: Transformer, Attention
+    2. BERT (2018) - Tags: Transformer, NLP
+    3. ReAct (2023) - Tags: LLM, Agent
+    """
+    # 建立標籤
+    t_transformer = Tag(name="Transformer")
+    t_attention = Tag(name="Attention")
+    t_nlp = Tag(name="NLP")
+    t_llm = Tag(name="LLM")
+    t_agent = Tag(name="Agent")
+    
+    p1 = Paper(
+        title="Attention is All You Need",
+        authors="Vaswani et al.",
+        year=2017,
+        venue="NeurIPS",
+        abstract="The dominant sequence transduction models...",
+        pdf_path="path/1",
+        tags=[t_transformer, t_attention]
+    )
+    
+    p2 = Paper(
+        title="BERT: Pre-training of Deep Bidirectional Transformers",
+        authors="Devlin et al.",
+        year=2018,
+        venue="NAACL",
+        abstract="We introduce a new language representation model...",
+        pdf_path="path/2",
+        tags=[t_transformer, t_nlp]
+    )
+    
+    p3 = Paper(
+        title="ReAct: Synergizing Reasoning and Acting in LLMs",
+        authors="Yao et al.",
+        year=2023,
+        venue="ICLR",
+        abstract="We present ReAct, where LLMs generate reasoning traces...",
+        pdf_path="path/3",
+        tags=[t_llm, t_agent]
+    )
+    
+    session.add_all([p1, p2, p3])
+    session.commit()
+    return [p1, p2, p3]
