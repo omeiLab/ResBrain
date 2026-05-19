@@ -84,7 +84,10 @@ def upload_pdf(id: int, file: UploadFile = File(...), session: Session = Depends
     return db_paper
 
 @router.get("/", response_model=List[PaperRead], status_code=200)
-def get_paper(session: Session = Depends(get_session)):
+def get_paper(
+    
+    session: Session = Depends(get_session)
+):
     '''
     Get all papers
     API: GET /papers/
