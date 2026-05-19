@@ -1,10 +1,11 @@
 import shutil
 from pathlib import Path
 from fastapi import APIRouter, Depends, HTTPException, File, UploadFile
-from sqlmodel import Session, select
-from typing import List
+from sqlmodel import Session, select, or_
+from typing import List, Optional
 from app.database.db import get_session
 from app.models.paper import Paper, PaperCreate, PaperRead
+from app.models.tag import Tag
 from app.models.note import Note, NoteCreate, NoteRead
 from app.services.tag_service import get_or_create_tags
 
@@ -85,14 +86,33 @@ def upload_pdf(id: int, file: UploadFile = File(...), session: Session = Depends
 
 @router.get("/", response_model=List[PaperRead], status_code=200)
 def get_paper(
-    
+    year: Optional[int] = None,
+    venue: Optional[str] = None,
+    tag: Optional[str] = None,
+    q: Optional[str] = None,
     session: Session = Depends(get_session)
 ):
     '''
-    Get all papers
+    Get all papers with filters
     API: GET /papers/
     '''
     statement = select(Paper)
+
+    # apply filters
+    if year is not None:
+        statement = statement.where(Paper.year == year)
+    if venue is not None:
+        statement = statement.where(Paper.venue == venue)
+    if tag is not None:
+        statement = statement.where(Paper.tags.any(name=tag))   # type: ignore
+    if q is not None:
+        statement = statement.where(
+            or_(
+                Paper.title.contains(q),    # type: ignore
+                Paper.abstract.contains(q)  # type: ignore
+            )
+        )
+
     return session.exec(statement).all()
 
 @router.get("/{id}/", response_model=PaperRead, status_code=200)
